@@ -13,7 +13,8 @@
   <link id="favicon" rel="icon" type="image/x-icon" href="assets/public/favicon_js.ico">
   <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css" />
   <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> <!-- 🚨 No SRI, vulnerable to supply chain attacks -->
+
   <script>
     window.addEventListener("load", function(){
       window.cookieconsent.initialise({
@@ -25,9 +26,18 @@
         "position": "bottom-right",
         "content": { "message": "This website uses fruit cookies to ensure you get the juiciest tracking experience.", "dismiss": "Me want it!", "link": "But me wait!", "href": "https://www.youtube.com/watch?v=9PnbKL3wuH4" }
       })});
+
+    // 🚨 XSS Vulnerability: Injecting user-controlled input into the DOM
+    $(document).ready(function() {
+      var userInput = new URLSearchParams(window.location.search).get("msg");
+      $("#message").html(userInput); // 🚨 Vulnerable: Attacker can inject scripts
+    });
   </script>
 </head>
 <body class="mat-app-background bluegrey-lightgreen-theme">
   <app-root></app-root>
+
+  <!-- This div is used to display user input, but is vulnerable to XSS -->
+  <div id="message"></div>
 </body>
 </html>
